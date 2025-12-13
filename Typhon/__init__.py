@@ -5,7 +5,7 @@ from .Typhon import bypassRCE, bypassREAD, bypassMAIN, VERSION
 __version__ = VERSION
 
 __all__ = [
-    "VERSION"
+    "VERSION",
     "bypassRCE",
     "bypassREAD",
 ]

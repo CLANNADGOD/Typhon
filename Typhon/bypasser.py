@@ -1332,7 +1332,7 @@ class BypassGenerator:
         """
         a() -> a.__call__()
 
-        only if less than three functions is called and have a 
+        only if less than three functions is called and have a
         length less than 30 characters should this bypasser work.
         """
 

