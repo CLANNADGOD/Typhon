@@ -15,8 +15,8 @@ from inspect import currentframe
 from typing import Any, Dict, Union
 
 # need to be set before other imports
-log_level_ = "INFO"  # changable in bypassMAIN()
-search_depth = 5  # changable in bypassMAIN()
+log_level_ = "INFO"  # changeable in bypassMAIN()
+search_depth = 5  # changeable in bypassMAIN()
 logging.basicConfig(level=log_level_, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
