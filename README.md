@@ -13,7 +13,7 @@
 
 ![image](./image/usage_example.gif)
 
-文档: https://typhonbreaker.readthedocs.io/  
+文档: https://typhon.lamentxu.top/  
 博客: https://www.cnblogs.com/LAMENTXU/articles/19101758
 
 **请务必看完本readme后再使用Typhon工具，尤其是[Q&A](#QA)部分。**
@@ -48,83 +48,7 @@ pip install TyphonBreaker
 
 ### Interface
 
-**in Code**
-
-```python
-import Typhon
-Typhon.bypassRCE(cmd: str,
-    local_scope:dict=None,
-    banned_chr:list=[],
-    allowed_chr:list=[],
-    banned_ast:list=[],
-    banned_re:list=[],
-    max_length:int=None,
-    allow_unicode_bypass:bool=False,
-    print_all_payload:bool=False,
-    interactive:bool=True,
-    depth:int=5,
-    recursion_limit:int=200,
-    log_level:str='INFO')
-```
-
-- `cmd`: RCE所使用的bash command  
-- `local_scope`: 沙箱内的全局变量空间，若无限制则忽略此参数  
-- `banned_chr`: 禁止的字符  
-- `allowed_chr`: 允许的字符（`[]`为全部允许）  
-- `banned_ast`: 禁止的AST节点  
-- `banned_re`: 禁止的正则表达式（列表或字符串）  
-- `max_length`: payload的最大长度  
-- `allow_unicode_bypass`: 是否允许unicode绕过  
-- `print_all_payload`: 是否打印所有payload   
-- `interactive`: 当前pyjail是否允许`stdin`（即如`breakpoint()`等payload是否成立）  
-- `depth`: 组合bypasser的最大深度（建议使用默认值）  
-- `recursion_limit`: 最大递归深度（建议使用默认值）  
-- `log_level`: 输出级别
-    - `info`: 正常输出
-    - `debug`: 调试输出，包含更多信息
-    - `quiet`: 静默模式，只有banner和最终结果输出
-
-```python
-import Typhon
-Typhon.bypassREAD(filepath: str,
-    mode:str='eval',
-    local_scope:dict=None,
-    banned_chr:list=[],
-    allowed_chr:list=[],
-    banned_ast:list=[],
-    banned_re:list=[],
-    max_length:int=None,
-    allow_unicode_bypass:bool=False,
-    print_all_payload:bool=False,
-    interactive:bool=True,
-    depth:int=5,
-    recursion_limit:int=200,
-    log_level:str='INFO')
-```
-
-- `filepath`: 所读取的文件路径  
-- `mode`: 沙箱内RCE的模式，可选`eval`或`exec`，关系到最后外带输出的逻辑  
-- `local_scope`: 沙箱内的全局变量空间，若无限制则忽略此参数  
-- `banned_chr`: 禁止的字符  
-- `allowed_chr`: 允许的字符（`[]`为全部允许）  
-- `banned_ast`: 禁止的AST节点  
-- `banned_re`: 禁止的正则表达式（列表或字符串）  
-- `max_length`: payload的最大长度  
-- `allow_unicode_bypass`: 是否允许unicode绕过  
-- `print_all_payload`: 是否打印所有payload   
-- `interactive`: 当前pyjail是否允许`stdin`（即如`breakpoint()`等payload是否成立）  
-- `depth`: 组合bypasser的最大深度（建议使用默认值）  
-- `recursion_limit`: 最大递归深度（建议使用默认值）  
-- `log_level`: 输出级别
-    - `info`: 正常输出
-    - `debug`: 调试输出，包含更多信息
-    - `quiet`: 静默模式，只有banner和最终结果输出
-
-**此处注：此工具目前对`bypassREAD`函数的处理很不严谨。该函数将在后面的版本中得到大幅度的改善和细化。**
-
-**Command Line Interface**
-
-这部分不是本工具的重点，但是PR welcome. 
+提供 `bypass*` 系列接口。主要见 [API 文档](https://typhon.lamentxu.top/zh-cn/latest/USAGE.html)
 
 ## Step by Step Tutorial
 
