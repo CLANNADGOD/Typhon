@@ -39,7 +39,7 @@ from .utils import *
 # The RCE data including RCE functions and their parameters.
 from .RCE_data import *
 
-VERSION = "1.0.12-alpha"
+VERSION = "1.0.12"
 BANNER = (
     r"""
     .-')          _                 Typhon: a pyjail bypassing tool
@@ -873,8 +873,10 @@ def bypassRCE(
 
 
 def bypassREAD(
-    filepath,
+    filepath: str,
+    RCE_method: str,
     local_scope: dict = None,
+    is_allow_exception_leak: bool = True,
     banned_chr: list = [],
     allowed_chr: list = [],
     banned_ast: list = [],
@@ -891,6 +893,8 @@ def bypassREAD(
     The main function to try to RCE in sandbox.
 
     :param filepath: path to target file (e.g. /etc/passwd).
+    :param RCE_method: method to RCE, can be "exec" or "eval".
+    :param is_allow_exception_leak: if exception leak is allowed, will use exception to leak filedata.
     :param local_scope: is a list of local variables in the sandbox environment.
     :param banned_chr: is a list of blacklisted characters.
     :param allowed_chr: is a list of allowed characters.
@@ -922,7 +926,15 @@ def bypassREAD(
         print_all_payload=print_all_payload,
         log_level=log_level,
     )
-
+    if RCE_method != "exec" and RCE_method != "eval":
+        logger.critical("[!] RCE method is not supported, only support exec or eval.")
+        quit(1)
     try_to_restore("filecontentsio", cmd=filepath)
-    try_to_restore("filecontentstring", cmd=filepath, end_of_prog=True)
+    if RCE_method == "exec":
+        try_to_restore("filecontentstring", cmd=filepath)
+        if is_allow_exception_leak:
+            try_to_restore("print_filecontent_error", cmd=filepath, end_of_prog=True)
+        try_to_restore("print_filecontent", cmd=filepath, end_of_prog=True)
+    else:
+        try_to_restore("filecontentstring", cmd=filepath, end_of_prog=True)
     return bypasses_output(generated_path=generated_path)

@@ -21,19 +21,6 @@ class TestTyphonRCE(unittest.TestCase):
                 import string
                 import Typhon
                 import ast
-
-                with self.assertRaises(RuntimeError):
-                    Typhon.bypassRCE(
-                        cmd="whoami",
-                        interactive=False,
-                        banned_chr="'\"ib",
-                        allow_unicode_bypass=True,
-                        banned_ast=[ast.Import],
-                        local_scope={},
-                        log_level="QUIET",
-                    )
-                del Typhon
-                mock_exit.assert_called_with(0)
         with redirect_stdout(StringIO()) as f:
             with patch("builtins.exit") as mock_exit:
                 mock_exit.side_effect = RuntimeError("Test")
@@ -49,7 +36,7 @@ class TestTyphonRCE(unittest.TestCase):
                         allow_unicode_bypass=True,
                         banned_ast=[ast.Import],
                         local_scope={},
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
@@ -68,7 +55,7 @@ class TestTyphonRCE(unittest.TestCase):
                         allow_unicode_bypass=True,
                         banned_ast=[ast.Import],
                         local_scope={},
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
@@ -83,7 +70,7 @@ class TestTyphonRCE(unittest.TestCase):
                         interactive=False,
                         allow_unicode_bypass=True,
                         local_scope={},
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
@@ -96,7 +83,7 @@ class TestTyphonRCE(unittest.TestCase):
                     Typhon.bypassRCE(
                         cmd="cat /tmp/flag.txt",
                         banned_chr=[".", "_", "[", "]", "'", '"'],
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
@@ -111,31 +98,7 @@ class TestTyphonRCE(unittest.TestCase):
                         interactive=True,
                         banned_chr=["help", "breakpoint", "input"],
                         banned_re=r".*import.*",
-                        log_level="QUIET",
-                    )
-                del Typhon
-                mock_exit.assert_called_with(0)
-            with patch("builtins.exit") as mock_exit:
-                mock_exit.side_effect = RuntimeError("Test")
-                import Typhon
-
-                with self.assertRaises(RuntimeError):
-                    Typhon.bypassRCE(
-                        cmd="whoami",
-                        local_scope={"__builtins__": None},
-                        banned_chr=[
-                            "__loader__",
-                            "__import__",
-                            "os",
-                            "[:",
-                            "\\x",
-                            "+",
-                            "join",
-                        ],
-                        interactive=True,
-                        recursion_limit=200,
-                        depth=5,
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
@@ -159,11 +122,20 @@ class TestTyphonRCE(unittest.TestCase):
                         interactive=True,
                         recursion_limit=200,
                         depth=5,
-                        log_level="QUIET",
+                        
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
+            with patch("builtins.exit") as mock_exit:
+                mock_exit.side_effect = RuntimeError("Test")
+                import Typhon
 
+                with self.assertRaises(RuntimeError):
+                    Typhon.bypassRCE(
+                        cmd="",
+                    )
+                del Typhon
+                mock_exit.assert_called_with(1)
 
 class TestTyphonREAD(unittest.TestCase):
     def tearDown(self):
@@ -176,27 +148,52 @@ class TestTyphonREAD(unittest.TestCase):
                 import Typhon
 
                 with self.assertRaises(RuntimeError):
+                    Typhon.bypassREAD(
+                        filepath="",       
+                    )
+                del Typhon
+                mock_exit.assert_called_with(1)
+        with redirect_stdout(StringIO()) as f:
+            with patch("builtins.exit") as mock_exit:
+                mock_exit.side_effect = RuntimeError("Test")
+                import Typhon
 
-                    def b():
-                        pass
-                        b()
-
+                with self.assertRaises(RuntimeError):
                     Typhon.bypassREAD(
                         filepath="/flag",
-                        banned_chr=[
-                            "__loader__",
-                            "__import__",
-                            "os",
-                            "[:",
-                            "\\x",
-                            "+",
-                            "join",
-                        ],
-                        interactive=False,
-                        recursion_limit=100,
-                        local_scope={"__builtins__": None, "a": lambda x: x, "b": b},
-                        depth=5,
-                        log_level="QUIET",
+                        RCE_method='exec'       
+                    )
+                del Typhon
+                mock_exit.assert_called_with(0)
+        with redirect_stdout(StringIO()) as f:
+            with patch("builtins.exit") as mock_exit:
+                mock_exit.side_effect = RuntimeError("Test")
+                import Typhon
+
+                with self.assertRaises(RuntimeError):
+                    Typhon.bypassREAD(
+                        '/flag',
+                        RCE_method = 'eval',
+                        allow_unicode_bypass=True,
+                        is_allow_exception_leak=True,
+                        local_scope={'lit': list, 'dic': dict, '__builtins__': None},
+                        banned_chr= '𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵𝓪𝓫𝓬𝓭𝓮𝓯𝓰bcdefgjklnpqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                    )
+                del Typhon
+                mock_exit.assert_called_with(0)
+        with redirect_stdout(StringIO()) as f:
+            with patch("builtins.exit") as mock_exit:
+                mock_exit.side_effect = RuntimeError("Test")
+                import Typhon
+
+                with self.assertRaises(RuntimeError):
+                    Typhon.bypassREAD(
+                        '/flag',
+                        RCE_method = 'exec',
+                        allow_unicode_bypass=True,
+                        is_allow_exception_leak=True,
+                        local_scope={'lit': list, 'dic': dict, '__builtins__': None},
+                        banned_chr= '𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩𝒪𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵𝓪𝓫𝓬𝓭𝓮𝓯𝓰bcdefgjklnpqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)

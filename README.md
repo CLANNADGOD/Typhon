@@ -251,7 +251,7 @@ Typhon的workflow顺序如下：
     - [x] `list(dict(a=1))[0]`替换`'a'`
     - [x] `str()`替换空字符串
 - [ ] 实现内置的bash bypasser 
-- [ ] 更好的`bypassREAD`函数  
+- [x] 更好的`bypassREAD`函数  
 - [x] 实现白名单功能
 - [x] 自动寻找`bytes`
 

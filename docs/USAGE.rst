@@ -145,13 +145,28 @@ USAGE 用户指南
         ``"INFO"`` 日志级别会打印出沙箱的简要信息，包括每个步骤的执行时间、返回值等。
         ``"QUIET"`` 日志级别会关闭所有日志输出。
 
-.. function:: bypassREAD(filepath, local_scope: dict = None,banned_chr: list = [],allowed_chr: list = [],banned_ast: list = [],banned_re: list = [],max_length: int = None,allow_unicode_bypass: bool = False,print_all_payload: bool = False,interactive: bool = True,depth: int = 5,recursion_limit: int = 200,log_level: str = "INFO",)
+.. function:: bypassREAD(filepath, RCE_method, is_allow_exception_leak: bool = True, local_scope: dict = None, banned_chr: list = [], allowed_chr: list = [], banned_ast: list = [], banned_re: list = [], max_length: int = None, allow_unicode_bypass: bool = False, print_all_payload: bool = False, interactive: bool = True, depth: int = 5, recursion_limit: int = 200, log_level: str = "INFO",)
 
     此函数的使用方法与 :py:func:`bypassRCE` 相似。其功能为绕过沙箱读取特定文件。
 
     .. py:attribute:: filepath
 
         要读取的文件的绝对路径或相对路径。
+    
+    .. py:attribute:: RCE_method
+
+        读取文件时使用的 RCE 方法。仅能为 ``"exec"`` 或 ``"eval"``。
+        
+    .. note::
+
+        由于文件读取需要关心回显问题（与 RCE 问题不同）， ``Typhon`` 将需要手机沙箱的 RCE 函数以做 payload 的调整。
+        我们默认：
+            - "exec" 模式：我们关心回显问题
+            - "eval" 模式：我们不关心回显问题
+    
+    .. py:attribute:: is_allow_exception_leak
+
+        靶机中是否可以泄露报错信息。此参数仅在 :py:attr:`~bypassREAD.RCE_method` 为 ``"exec"`` 时有效。
     
     其余参数与 :py:func:`bypassRCE` 相同。
 
