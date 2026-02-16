@@ -149,7 +149,8 @@ class TestTyphonREAD(unittest.TestCase):
 
                 with self.assertRaises(SystemExit):
                     Typhon.bypassREAD(
-                        filepath="",       
+                        filepath="",
+                        RCE_method=''     
                     )
                 del Typhon
                 mock_quit.assert_called_with(1)
