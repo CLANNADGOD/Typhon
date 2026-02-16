@@ -126,16 +126,16 @@ class TestTyphonRCE(unittest.TestCase):
                     )
                 del Typhon
                 mock_exit.assert_called_with(0)
-            with patch("builtins.exit") as mock_exit:
-                mock_exit.side_effect = RuntimeError("Test")
+            with patch("builtins.quit") as mock_quit:
+                mock_quit.side_effect = SystemExit("Test")
                 import Typhon
 
-                with self.assertRaises(RuntimeError):
+                with self.assertRaises(SystemExit):
                     Typhon.bypassRCE(
                         cmd="",
                     )
                 del Typhon
-                mock_exit.assert_called_with(1)
+                mock_quit.assert_called_with(1)
 
 class TestTyphonREAD(unittest.TestCase):
     def tearDown(self):
@@ -143,16 +143,28 @@ class TestTyphonREAD(unittest.TestCase):
 
     def test_bypassREAD(self):
         with redirect_stdout(StringIO()) as f:
-            with patch("builtins.exit") as mock_exit:
-                mock_exit.side_effect = RuntimeError("Test")
+            with patch("builtins.quit") as mock_quit:
+                mock_quit.side_effect = SystemExit("Test")
                 import Typhon
 
-                with self.assertRaises(RuntimeError):
+                with self.assertRaises(SystemExit):
                     Typhon.bypassREAD(
                         filepath="",       
                     )
                 del Typhon
-                mock_exit.assert_called_with(1)
+                mock_quit.assert_called_with(1)
+        with redirect_stdout(StringIO()) as f:
+            with patch("builtins.quit") as mock_quit:
+                mock_quit.side_effect = SystemExit("Test")
+                import Typhon
+
+                with self.assertRaises(SystemExit):
+                    Typhon.bypassREAD(
+                        filepath="flag",
+                        RCE_method='none'       
+                    )
+                del Typhon
+                mock_quit.assert_called_with(1)
         with redirect_stdout(StringIO()) as f:
             with patch("builtins.exit") as mock_exit:
                 mock_exit.side_effect = RuntimeError("Test")
