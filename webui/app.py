@@ -43,7 +43,7 @@ def _parse_list(value: Any) -> List[str]:
     if value is None:
         return []
     try:
-        return [str(item).strip() for item in eval(list) if str(item).strip()]
+        return [str(item).strip() for item in eval(value) if str(item).strip()]
     except:
         normalized = value.replace("\r\n", "\n").replace("\r", "\n")
         items: List[str] = []
