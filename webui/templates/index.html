@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="page_title">Typhon Visual Console</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+    <div class="bg-orb orb-c"></div>
+
+    <main class="layout">
+      <header class="hero" data-stagger>
+        <div class="hero-head">
+          <p class="eyebrow" data-i18n="eyebrow">Typhon Visual Console</p>
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button class="lang-btn active" type="button" data-lang="zh">中文</button>
+            <button class="lang-btn" type="button" data-lang="en">EN</button>
+          </div>
+        </div>
+        <h1 data-i18n="hero_title">Web UI for pyjail bypass workflows</h1>
+        <p class="subtitle" data-i18n="hero_subtitle">
+          Fill the options, run Typhon, and inspect generated payload output in one place.
+        </p>
+      </header>
+
+      <section class="panel config-panel" data-stagger>
+        <form id="typhon-form">
+          <div class="mode-switch">
+            <button class="mode-btn active" type="button" data-mode="rce" data-i18n="mode_rce">
+              RCE Mode
+            </button>
+            <button class="mode-btn" type="button" data-mode="read" data-i18n="mode_read">
+              READ Mode
+            </button>
+          </div>
+
+          <input type="hidden" id="mode" value="rce" />
+
+          <div class="grid">
+            <label class="field rce-only">
+              <span class="field-label" data-i18n="label_cmd">Command (`cmd`)</span>
+              <input id="cmd" type="text" placeholder="cat /flag" data-i18n-placeholder="ph_cmd" required />
+            </label>
+
+            <label class="field read-only hidden">
+              <span class="field-label" data-i18n="label_filepath">Target file (`filepath`)</span>
+              <input id="filepath" type="text" placeholder="/etc/passwd" data-i18n-placeholder="ph_filepath" />
+            </label>
+
+            <label class="field read-only hidden">
+              <span class="field-label" data-i18n="label_rce_method">RCE method</span>
+              <select id="rce_method">
+                <option value="exec">exec</option>
+                <option value="eval">eval</option>
+              </select>
+            </label>
+          </div>
+
+          <section class="basic-block">
+            <h3 data-i18n="basic_scope_title">Execution Context</h3>
+            <p class="group-desc" data-i18n="basic_scope_desc">
+              Fill this with real challenge globals/locals when available.
+            </p>
+            <div class="grid advanced-grid">
+              <label class="field">
+                <span class="field-label" data-i18n="label_local_scope">local_scope (JSON)</span>
+                <textarea id="local_scope" rows="4" placeholder='{"__builtins__": {}}'></textarea>
+                <small class="hint" data-i18n="hint_local_scope">
+                  Use real challenge scope when possible. Supports `@builtin:list`, `@module:os`.
+                </small>
+              </label>
+            </div>
+          </section>
+
+          <section class="basic-block">
+            <h3 data-i18n="basic_filter_title">WAF / Filter Rules</h3>
+            <p class="group-desc" data-i18n="basic_filter_desc">
+              These are common constraints. Keep them close to the main inputs.
+            </p>
+            <div class="grid advanced-grid">
+              <label class="field">
+                <span class="field-label" data-i18n="label_banned_chr">banned_chr (comma/newline split)</span>
+                <textarea id="banned_chr" rows="4" placeholder="import,__builtins__,{}"></textarea>
+                <small class="hint" data-i18n="hint_banned_chr">
+                  Blacklisted chars/strings. Split by comma or newline.
+                </small>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="label_allowed_chr">allowed_chr (comma/newline split)</span>
+                <textarea id="allowed_chr" rows="4" placeholder=""></textarea>
+                <small class="hint" data-i18n="hint_allowed_chr">
+                  Whitelist mode. Do not set together with `banned_chr`.
+                </small>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="label_banned_re">banned_re (comma/newline split)</span>
+                <textarea id="banned_re" rows="4" placeholder=".*import.*"></textarea>
+                <small class="hint" data-i18n="hint_banned_re">
+                  Regex rules blocked by WAF.
+                </small>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="label_banned_ast">banned_ast (AST class names)</span>
+                <input id="banned_ast" type="text" placeholder="Import,Attribute" />
+                <small class="hint" data-i18n="hint_banned_ast">
+                  Python AST node names, e.g. `Import`, `Attribute`.
+                </small>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="label_max_length">max_length</span>
+                <input id="max_length" type="number" min="1" />
+                <small class="hint" data-i18n="hint_max_length">
+                  Max payload length accepted by target. Empty means unlimited.
+                </small>
+              </label>
+            </div>
+          </section>
+
+          <details class="advanced">
+            <summary data-i18n="advanced_options">Advanced Options</summary>
+            <p class="advanced-intro" data-i18n="advanced_intro">
+              Engine tuning only: recursion, search depth, output strategy.
+            </p>
+
+            <div class="advanced-groups">
+              <section class="opt-group">
+                <h3 data-i18n="group_search_title">Search Strategy</h3>
+                <p class="group-desc" data-i18n="group_search_desc">
+                  Trade off speed versus bypass coverage.
+                </p>
+                <div class="grid advanced-grid">
+                  <label class="field">
+                    <span class="field-label" data-i18n="label_depth">depth</span>
+                    <input id="depth" type="number" min="1" value="5" />
+                    <small class="hint" data-i18n="hint_depth">
+                      Higher depth can find more payloads but is slower.
+                    </small>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label" data-i18n="label_recursion_limit">recursion_limit</span>
+                    <input id="recursion_limit" type="number" min="50" value="200" />
+                    <small class="hint" data-i18n="hint_recursion_limit">
+                      Python recursion cap for bypass generation.
+                    </small>
+                  </label>
+
+                  <label class="check-field">
+                    <span class="check">
+                      <input id="allow_unicode_bypass" type="checkbox" />
+                      <span data-i18n="check_allow_unicode">allow_unicode_bypass</span>
+                    </span>
+                    <small class="hint" data-i18n="hint_allow_unicode">
+                      Tries unicode confusable characters. May fail in some terminals.
+                    </small>
+                  </label>
+                </div>
+              </section>
+
+              <section class="opt-group">
+                <h3 data-i18n="group_runtime_title">Runtime Behavior</h3>
+                <p class="group-desc" data-i18n="group_runtime_desc">
+                  Controls execution timeout and shell behavior.
+                </p>
+                <div class="grid advanced-grid">
+                  <label class="field">
+                    <span class="field-label" data-i18n="label_timeout">timeout_sec</span>
+                    <input id="timeout_sec" type="number" min="5" max="600" value="90" />
+                    <small class="hint" data-i18n="hint_timeout">
+                      Max runtime per task in seconds.
+                    </small>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label" data-i18n="label_log_level">log_level</span>
+                    <select id="log_level">
+                      <option value="INFO">INFO</option>
+                      <option value="DEBUG">DEBUG</option>
+                      <option value="QUIET">QUIET</option>
+                    </select>
+                    <small class="hint" data-i18n="hint_log_level">
+                      DEBUG is verbose. QUIET suppresses most output.
+                    </small>
+                  </label>
+
+                  <label class="check-field">
+                    <span class="check">
+                      <input id="interactive" type="checkbox" checked />
+                      <span data-i18n="check_interactive">interactive</span>
+                    </span>
+                    <small class="hint" data-i18n="hint_interactive">
+                      Enable payload paths that rely on interactive input.
+                    </small>
+                  </label>
+
+                  <label class="check-field read-only hidden">
+                    <span class="check">
+                      <input id="is_allow_exception_leak" type="checkbox" checked />
+                      <span data-i18n="check_exception_leak">is_allow_exception_leak</span>
+                    </span>
+                    <small class="hint" data-i18n="hint_exception_leak">
+                      READ mode only. Uses exception traceback for leak output.
+                    </small>
+                  </label>
+                </div>
+              </section>
+
+              <section class="opt-group">
+                <h3 data-i18n="group_output_title">Output Control</h3>
+                <p class="group-desc" data-i18n="group_output_desc">
+                  Configure how many payload candidates are shown.
+                </p>
+                <div class="grid advanced-grid">
+                  <label class="check-field">
+                    <span class="check">
+                      <input id="print_all_payload" type="checkbox" />
+                      <span data-i18n="check_print_all_payload">print_all_payload</span>
+                    </span>
+                    <small class="hint" data-i18n="hint_print_all_payload">
+                      Print every valid payload, not only the first one.
+                    </small>
+                  </label>
+                </div>
+              </section>
+            </div>
+          </details>
+
+          <div class="actions">
+            <button id="run-btn" class="primary" type="submit" data-i18n="btn_run">Run Typhon</button>
+            <button id="reset-btn" class="ghost" type="button" data-i18n="btn_reset">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel result-panel" data-stagger>
+        <div class="result-head">
+          <h2 data-i18n="result_title">Execution Output</h2>
+          <span id="status-badge" class="badge idle" data-i18n="status_idle">Idle</span>
+        </div>
+        <div class="result-meta">
+          <span id="duration" data-i18n="meta_duration">Duration: -</span>
+          <span id="exit-code" data-i18n="meta_exit_code">Exit code: -</span>
+          <span id="runner-code" data-i18n="meta_runner_code">Runner code: -</span>
+        </div>
+        <div class="terminal-shell" id="terminal-shell">
+          <div class="terminal-top">
+            <div class="term-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="terminal-title" data-i18n="terminal_title">Typhon Output Terminal</div>
+          </div>
+          <pre id="output" data-i18n="output_ready">Ready.</pre>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
